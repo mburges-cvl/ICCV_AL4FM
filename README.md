@@ -30,28 +30,30 @@ conda install TBD
 
 We validate the performance of AL4FM on the DIOR, HRSC2016, DOTAv2, FAIR1M and our private Wafflehome dataset.
 
-<div style="display: flex; justify-content: flex-start;">
-  <figure style="width: 20%; text-align: center; margin: 0; padding: 0; box-sizing: border-box;">
-    <img src="assets/dior_AP50_curve.svg" alt="Alt text" style="width: 100%; display: block;">
-    <figcaption style="margin-top: 5px; margin-bottom: 0; box-sizing: border-box;">DIOR</figcaption>
-  </figure>
-  <figure style="width: 20%; text-align: center; margin: 0; padding: 0; box-sizing: border-box;">
-    <img src="assets/hrsc2016_AP50_curve.svg" alt="Alt text" style="width: 100%; display: block;">
-    <figcaption style="margin-top: 5px; margin-bottom: 0; box-sizing: border-box;">HRSC2016</figcaption>
-  </figure>
-  <figure style="width: 20%; text-align: center; margin: 0; padding: 0; box-sizing: border-box;">
-    <img src="assets/dotav2_AP50_curve.svg" alt="Alt text" style="width: 100%; display: block;">
-    <figcaption style="margin-top: 5px; margin-bottom: 0; box-sizing: border-box;">DOTAv2</figcaption>
-  </figure>
-  <figure style="width: 20%; text-align: center; margin: 0; padding: 0; box-sizing: border-box;">
-    <img src="assets/fair1m_AP50_curve.svg" alt="Alt text" style="width: 100%; display: block;">
-    <figcaption style="margin-top: 5px; margin-bottom: 0; box-sizing: border-box;">FAIR1M</figcaption>
-  </figure>
-  <figure style="width: 20%; text-align: center; margin: 0; padding: 0; box-sizing: border-box;">
-    <img src="assets/wafflehome_AP50_curve.svg" alt="Alt text" style="width: 100%; display: block;">
-    <figcaption style="margin-top: 5px; margin-bottom: 0; box-sizing: border-box;">Wafflehome</figcaption>
-  </figure>
-</div>
+<table style="width: 100%; border-collapse: collapse; border-spacing: 0; margin: 0 auto;">
+  <tr>
+    <td style="width: 20%; text-align: center; vertical-align: top; padding: 0;">
+      <img src="assets/dior_AP50_curve.svg" alt="DIOR" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+      <p style="text-align: center; margin: 5px 0 0;">DIOR</p>
+    </td>
+    <td style="width: 20%; text-align: center; vertical-align: top; padding: 0;">
+      <img src="assets/hrsc2016_AP50_curve.svg" alt="HRSC2016" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+      <p style="text-align: center; margin: 5px 0 0;">HRSC2016</p>
+    </td>
+    <td style="width: 20%; text-align: center; vertical-align: top; padding: 0;">
+      <img src="assets/dotav2_AP50_curve.svg" alt="DOTAv2" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+      <p style="text-align: center; margin: 5px 0 0;">DOTAv2</p>
+    </td>
+    <td style="width: 20%; text-align: center; vertical-align: top; padding: 0;">
+      <img src="assets/fair1m_AP50_curve.svg" alt="FAIR1M" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+      <p style="text-align: center; margin: 5px 0 0;">FAIR1M</p>
+    </td>
+    <td style="width: 20%; text-align: center; vertical-align: top; padding: 0;">
+      <img src="assets/wafflehome_AP50_curve.svg" alt="Wafflehome" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+      <p style="text-align: center; margin: 5px 0 0;">Wafflehome</p>
+    </td>
+  </tr>
+</table>
 
 ## License
 
