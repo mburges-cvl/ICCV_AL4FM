@@ -61,7 +61,7 @@ Both the front and backend are released under the MIT licence.
 
 ## Acknowledgements
 
-Our work is built upon [Segment Anything](https://github.com/facebookresearch/segment-anything), [SAM Geo](https://samgeo.gishub.org/) and [RT-DETR](https://github.com/lyuwenyu/RT-DETR). This research was supported in part by an appointment to the Oak Ridge National Laboratory GRO Program, sponsored by the U.S. Department of Energy and administered by the Oak Ridge Institute for Science and Education.
+Our work is built upon [Segment Anything](https://github.com/facebookresearch/segment-anything), [SAM Geo](https://samgeo.gishub.org/) and [RT-DETR](https://github.com/lyuwenyu/RT-DETR).
 
 ## Citation
 
