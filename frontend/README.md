@@ -51,7 +51,7 @@ AL-Frontend is a Python-based tool designed for interactive annotation of object
 ## Installation
 Clone the repository:
 ```
-git clone https://code.ornl.gov/vsz/alfrontend
+git clone https://github.com/mburges-cvl/ICCV_AL4FM/tree/main/frontend
 cd alfrontend
 ```
 
