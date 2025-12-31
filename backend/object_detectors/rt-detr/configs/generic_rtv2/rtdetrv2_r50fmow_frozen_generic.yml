@@ -1,0 +1,98 @@
+# RTDETRv2 Configuration for Active Learning
+# This config uses a ResNet-50 backbone with frozen early layers
+# Designed for efficient fine-tuning on custom datasets
+
+__include__: [
+  '../dataset/coco_detection.yml',
+  '../runtime.yml',
+  '../rtdetrv2/include/dataloader.yml',
+  '../rtdetrv2/include/optimizer.yml',
+  '../rtdetrv2/include/rtdetrv2_r50vd.yml',
+]
+
+
+output_dir: ./output/rtdetrv2_r50fmow_frozen_generic
+
+
+# Override for single class detection (active learning tasks)
+num_classes: 1
+remap_mscoco_category: False
+
+
+# Evaluation spatial size (1024x1024 for remote sensing)
+eval_spatial_size: [1024, 1024]
+
+
+# Backbone with frozen early layers for efficient fine-tuning
+PResNet:
+  depth: 50
+  variant: d
+  freeze_at: 2  # Freeze first 2 stages
+  return_idx: [1, 2, 3]
+  num_stages: 4
+  freeze_norm: True
+  pretrained: True
+
+
+# Optimizer settings optimized for fine-tuning
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm).*$'
+      lr: 0.00001  # Lower LR for backbone
+    -
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bn)).*$'
+      weight_decay: 0.
+
+  lr: 0.0005
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+
+# Runtime settings
+print_freq: 50
+checkpoint_freq: 5
+sync_bn: False
+use_amp: True
+use_ema: True
+
+ema:
+  type: ModelEMA
+  decay: 0.9999
+  warmups: 500
+
+
+# Transformer settings (adjusted for efficiency)
+RTDETRTransformerv2:
+  feat_channels: [256, 256, 256]
+  feat_strides: [8, 16, 32]
+  hidden_dim: 256
+  num_levels: 3
+  num_layers: 6
+  num_queries: 300
+  num_denoising: 100
+  label_noise_ratio: 0.5
+  box_noise_scale: 1.0
+  eval_idx: -1
+  num_points: [4, 4, 4]
+  cross_attn_method: default
+  query_select_method: default
+
+
+# Post processor
+RTDETRPostProcessor:
+  num_top_queries: 300
+
+
+# Loss function
+RTDETRCriterionv2:
+  weight_dict: {loss_vfl: 1, loss_bbox: 5, loss_giou: 2}
+  losses: ['vfl', 'boxes']
+  alpha: 0.75
+  gamma: 2.0
+  matcher:
+    type: HungarianMatcher
+    weight_dict: {cost_class: 2, cost_bbox: 5, cost_giou: 2}
+    alpha: 0.25
+    gamma: 2.0
