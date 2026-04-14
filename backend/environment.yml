@@ -1,0 +1,24 @@
+name: al4fm-backend
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pytorch>=2.0.1
+  - torchvision>=0.15.2
+  - pytorch-cuda=12.1
+  - numpy
+  - pillow
+  - scipy
+  - pandas
+  - matplotlib
+  - rasterio
+  - opencv
+  - tqdm
+  - pyyaml
+  - tensorboard
+  - requests
+  - pip
+  - pip:
+      - -r requirements.txt

@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pycocotools
+faster-coco-eval>=1.6.5
+segment-geospatial
+segment-anything-hq
+# Only needed by backend/object_detectors/tools/extract_sam_box_masks.py
+# (GroundedSAM-based box prompting). Remove if you do not run that script.
+autodistill
+autodistill-grounded-sam

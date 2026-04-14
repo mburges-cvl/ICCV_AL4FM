@@ -1,0 +1,3 @@
+# Pip-only extras for the AL4FM frontend.
+# Most dependencies are installed via environment.yml; keep this file for
+# anything that is easier to install from PyPI than from conda.

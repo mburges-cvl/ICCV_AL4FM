@@ -1,0 +1,14 @@
+name: al4fm-frontend
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - pillow
+  - matplotlib
+  - rasterio
+  - requests
+  - pyqt=5
+  - pip
+  - pip:
+      - -r requirements.txt

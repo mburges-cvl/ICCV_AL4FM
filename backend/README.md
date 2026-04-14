@@ -1,93 +1,119 @@
-# BackendAL
+# AL4FM Backend
+<img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
 
+Server-side component of [AL4FM](../README.md). The backend runs on a GPU machine and exposes a FastAPI service that the annotation frontend talks to over HTTP (typically through an SSH tunnel). It wraps an object detector (RT-DETRv2 / RF-DETR) with the active learning logic, runs SAM-based mask extraction for new datasets, and serves the sampling queries that drive the UI.
 
+## Status
 
-## Getting started
+Two pieces are not yet present in this public release and are being restored from the original lab checkout:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- `object_detectors/al_methods/FAST/sample_fast_main.py` — the FAST sampling routine that implements the active learning method described in the paper. It is imported at [`server.py:51`](server.py#L51) and used at [`server.py:513`](server.py#L513) and [`server.py:822`](server.py#L822). Until it is restored, the server will fail at import time.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The rest of the backend (training, evaluation, dataset sync, SAM mask extraction, API routing) is complete and runnable.
 
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Layout
 
 ```
-cd existing_repo
-git remote add origin https://smithers.cvl.tuwien.ac.at/mburges/backendal.git
-git branch -M main
-git push -uf origin main
+backend/
+├── server.py                        # FastAPI entry point (BackendServer class)
+├── server_ml_functions/             # Thin ML glue used by server.py
+│   ├── train_or_eval_od_model.py    #   - train_od_model / evaluate_od_model / extract_features_od_model
+│   ├── get_masks_for_new_ids.py     #   - extract_gt_masks / extract_dense_masks
+│   └── utils.py                     #   - load_annotations_for_ids etc.
+└── object_detectors/
+    ├── rt-detr/                     # Vendored RT-DETR / RT-DETRv2 (training configs + code)
+    ├── rf-detr/                     # Vendored RF-DETR
+    ├── al_methods/                  # Active learning samplers (FAST, …) — see status note above
+    └── tools/                       # Offline preprocessing scripts and experiment notebooks
 ```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://smithers.cvl.tuwien.ac.at/mburges/backendal/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```bash
+cd backend
+conda env create -f environment.yml
+conda activate al4fm-backend
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+`environment.yml` installs PyTorch (CUDA 12.1), torchvision, FastAPI, rasterio, pycocotools and the rest of the scientific stack. The `pip:` block installs:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- `segment-geospatial` and `segment-anything-hq` — used as the SAM wrapper everywhere in the codebase.
+- `faster-coco-eval` — faster replacement for `pycocotools` evaluation, required by the vendored RT-DETRv2 trainer.
+- `autodistill` + `autodistill-grounded-sam` — **only** needed if you run `object_detectors/tools/extract_sam_box_masks.py` (Grounded-SAM box prompting). Drop them from `requirements.txt` if you are not using that script.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+A CUDA-capable GPU with >= 8 GB VRAM is recommended. CPU-only operation is possible for the API surface but not for training or mask extraction.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Running the Server
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```bash
+python server.py --port 8005 --cuda 0 --workdir server_workdir \
+    --config object_detectors/rt-detr/configs/rtdetrv2/rtdetrv2_r50vd_6x_coco.yml
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Notable command-line flags (see [`server.py`](server.py) for the full list):
+
+| Flag | Default | Purpose |
+| --- | --- | --- |
+| `--port` | `8005` | FastAPI port. Must match the SSH tunnel and the port entered in the frontend's startup wizard. |
+| `--cuda` | `0` | CUDA device index. |
+| `--workdir` | `server_workdir` | Directory where per-experiment weights, logs and the per-experiment `objects_al_gt.npy` are written. |
+| `--config` | RT-DETRv2 config | Path to the detector training config. Ships with `rt-detr/configs/rtdetrv2/*.yml`; point this at whichever variant you want to train. |
+| `--epochs`, `--batch_size`, `--learning_rate`, `--eval_every` | — | Training hyperparameters. |
+
+On startup the server writes per-user activity logs to `logs/user_activity_log_<username>_localhost:<port>_<mode>.jsonl`.
+
+## HTTP API
+
+The frontend drives the server through the routes registered in `BackendServer.setup_routes` ([`server.py:104-146`](server.py#L104-L146)):
+
+| Route | Method | Purpose |
+| --- | --- | --- |
+| `/get_next_active_image_ids` | POST | Initial sampling round (before any training has happened). |
+| `/get_new_training_ids_smart` | GET | Active learning round using FAST sampling. |
+| `/train_model` | POST | Train the detector on the current labeled set. |
+| `/evaluate_model` | GET | Evaluate the detector on the training set. |
+| `/extract_prototype_masks` | GET | Run GT-mask extraction for the current dataset. |
+| `/extract_prototype_features` | GET | Cache detector features for the current dataset. |
+| `/extract_dense_masks` | POST | Run dense SAM mask extraction on a dataset (invoked from the frontend's dataset wizard). |
+| `/extraction_progress` | GET | Poll progress of a long-running extraction. |
+| `/get_available_objects` | GET | List the categories available in the current dataset. |
+| `/check_dataset_status`, `/prepare_dataset_sync`, `/upload_dataset_file`, `/finalize_dataset_sync` | — | Dataset sync endpoints used when the annotator uploads a new dataset from the frontend. |
+
+## Dataset Layout
+
+Datasets live under `datasets/<dataset_name>/`. The server expects a COCO-style annotation file plus 1024×1024 image tiles, and a set of `.npy` files produced by the SAM preprocessing step:
+
+```
+datasets/<dataset_name>/
+├── images/
+├── annotations.json
+├── boxes_<dataset_name>_16.npy       # SAM box proposals
+├── img_idx_<dataset_name>_16.npy     # per-proposal image index
+└── objects_<dataset_name>_16.npy     # dense SAM masks
+```
+
+The `_16` suffix encodes the `--pixels_between_points` setting used when generating the dense masks. If any of these files are missing, smart sampling logs a warning and falls back to random sampling ([`server.py:495-505`](server.py#L495-L505)).
+
+`objects_al_gt.npy` is written inside `--workdir` during an experiment and is not part of the dataset itself.
+
+## Preprocessing Tools
+
+`object_detectors/tools/` contains the scripts and notebooks used to prepare and analyse datasets:
+
+| File | Purpose |
+| --- | --- |
+| `extract_sam_dense_masks.py` | Run SAM (HQ-SAM via `segment-geospatial`) to produce the `boxes_*.npy`, `img_idx_*.npy` and `objects_*.npy` files. |
+| `extract_sam_box_masks.py` | Run Grounded-SAM to produce box-prompted masks. Only needed for the ablation where text prompts are used. |
+| `benchmark_sam.py` | Time SAM across different point spacings. |
+| `preprocess_fair1m.ipynb`, `preprocess_hrsc2016.ipynb`, `preprocess_fmow.ipynb`, `preprocess_xview.ipynb` | Notebook walkthroughs of how each public benchmark was converted into the AL4FM COCO layout. |
+| `active_learning_schematic.ipynb`, `interactive_od_schematic.ipynb`, `interpretable_ai_schematic.ipynb`, `make_plots_attention.ipynb`, `plot_sam_results.ipynb`, `find_and_plot_overviews.ipynb`, `plot_examples_coco_style.ipynb` | Figure-generation notebooks used in the paper. |
+
+Running `extract_sam_dense_masks.py` requires the dataset to already be registered in its `get_dataset_paths` helper; if you want to run it on a custom dataset, add an entry there or use the `/extract_dense_masks` API route instead (which takes arbitrary dataset names).
+
+## Object Detectors
+
+`object_detectors/rt-detr/` and `object_detectors/rf-detr/` are vendored copies of the upstream RT-DETR(v2) and RF-DETR repositories, with their own READMEs, configs and LICENSE files. The server currently drives RT-DETRv2 through `server_ml_functions/train_or_eval_od_model.py`.
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Released under the MIT license — see [LICENSE](../LICENSE).
