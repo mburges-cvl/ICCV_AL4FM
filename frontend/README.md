@@ -52,6 +52,11 @@ frontend/
 The frontend itself does not need a GPU.
 
 ## Installation
+Clone the repository:
+```
+git clone https://github.com/mburges-cvl/ICCV_AL4FM/tree/main/frontend
+cd alfrontend
+```
 
 From the repository root:
 

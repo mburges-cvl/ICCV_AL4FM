@@ -204,8 +204,18 @@ Both the front- and backend are released under the MIT license. See [LICENSE](LI
 
 ## Acknowledgements
 
-Our work is built upon [Segment Anything](https://github.com/facebookresearch/segment-anything), [SAM Geo](https://samgeo.gishub.org/) and [RT-DETR](https://github.com/lyuwenyu/RT-DETR). This research was supported in part by an appointment to the Oak Ridge National Laboratory GRO Program, sponsored by the U.S. Department of Energy and administered by the Oak Ridge Institute for Science and Education.
+Our work is built upon [Segment Anything](https://github.com/facebookresearch/segment-anything), [SAM Geo](https://samgeo.gishub.org/) and [RT-DETR](https://github.com/lyuwenyu/RT-DETR).
 
 ## Citation
 
-If you find our work useful for your research, please consider citing our ICCV paper (BibTeX TBD).
+If you find our work useful for you research, please consider citing our ICCV paper:
+```
+@InProceedings{Burges_2025_ICCV,
+    author    = {Burges, Marvin and Dias, Philipe Ambrozio and Woody, Carson and Walters, Sarah and Lunga, Dalton},
+    title     = {Active Learning Meets Foundation Models: Fast Remote Sensing Data Annotation for Object Detection},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2025},
+    pages     = {6058-6068}
+}
+```
