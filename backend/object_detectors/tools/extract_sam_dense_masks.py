@@ -40,6 +40,7 @@ def parse_args():
             "fair1m",
             "coco",
             "fineair",
+            "CHAI",
         ],
         help="Dataset to use (default: 'Tiny-DOTA')",
     )
@@ -52,8 +53,8 @@ def parse_args():
     parser.add_argument(
         "--server",
         type=str,
-        default="dgx",
-        choices=["dgx", "hpe"],
+        default="cvl",
+        choices=["dgx", "hpe", "cvl"],
         help=(
             "Server type: 'dgx' or 'hpe'. For dgx, outdir is '/raid/interns_2025/marvin/' and "
             "datasets are stored in '/raid/interns_2025/marvin/datasets/'; for hpe, outdir is "
@@ -131,6 +132,11 @@ def get_dataset_paths(dataset_base):
         "fineair": {
             "train_json": os.path.join(dataset_base, "fineair", "train.json"),
             "train_images": os.path.join(dataset_base, "fineair"),
+            "img_size": 1024,
+        },
+        "CHAI": {
+            "train_json": os.path.join(dataset_base, "IOD_Datasets/CHAI/annotations", "instances_train2017.json"),
+            "train_images": os.path.join(dataset_base, "IOD_Datasets/CHAI", "images"),
             "img_size": 1024,
         },
     }
@@ -274,6 +280,9 @@ def main():
     elif server == "hpe":
         dataset_base = "/home/vsz/datasets"
         outdir = "/data/interns_2025/marvin/"
+    elif server == "cvl":
+        dataset_base = "/data/mburges/datasets"
+        outdir = "/caa/Homes01/mburges/ICCV_AL4FM/"
     else:
         raise ValueError("Server must be either 'dgx' or 'hpe'.")
 

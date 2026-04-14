@@ -72,6 +72,11 @@ DATASET_PATHS = {
         "train_images": os.path.join("/raid/interns_2025/marvin/datasets", "fineair"),
         "img_size": 1024,
     },
+    "CHAI": {
+        "train_json": "/data/mburges/datasets/IOD_Datasets/CHAI/annotations/instances_train2017.json",
+        "train_images": "/data/mburges/datasets/IOD_Datasets/CHAI/images",
+        "img_size": 1024,
+    }
 }
 
 
