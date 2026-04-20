@@ -219,3 +219,4 @@ backend/object_detectors/rt-detr/dataset/DIOR
 .claude/settings.json
 backend/object_detectors/rt-detr/moco_geo+tp.pth
 backend/object_detectors/rt-detr/dataset/DOTAv2
+output/
